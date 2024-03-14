@@ -33,7 +33,7 @@ of queries:
 1. **Balance Query**: This query retrieves the user's actual balance, initializes a new game session, and creates a new
    user if needed.
 
-   **Request Example**:
+   **Request Example (MD5 sign: acf3d34f51ab1c0eae1673f170ef2fc2)**:
     ```json
     {
         "api": "BALANCE",
@@ -66,7 +66,7 @@ of queries:
 
 2. **Debit Query**: This query makes a bet and changes the user's account balance accordingly.
 
-   **Request Example**:
+   **Request Example (MD5 sign: e9cd38246deefabc28797717703f1541)**:
     ```json
     {
         "api": "DEBIT",
@@ -94,7 +94,7 @@ of queries:
                 "amount": 20,
                 "type": "DEBIT",
                 "game": {
-                    "sessionId": "a96c6ce5-bee7-4b03-a3ee-7fd48abbdbf8",
+                    "sessionId": "a96c6ce5-bee7-4b03-a3ee-7fd48abbdbf5",
                     "gameStatus": "IN_PROCESS"
                 }
             }
@@ -104,12 +104,12 @@ of queries:
 
 3. **Credit Query**: This query gets the winning amount and changes the account balance accordingly.
 
-   **Request Example**:
+   **Request Example (MD5 sign: 594d745baf33327127bf29cd7e7c07d0)**:
     ```json
     {
         "api": "CREDIT",
         "data": {
-            "sessionId": "a96c6ce5-bee7-4b03-a3ee-7fd48abbdbf8",
+            "sessionId": "a96c6ce5-bee7-4b03-a3ee-7fd48abbdbf5",
             "amount": "20"
         }
     }
@@ -132,7 +132,7 @@ of queries:
                 "amount": 20,
                 "type": "CREDIT",
                 "game": {
-                    "sessionId": "a96c6ce5-bee7-4b03-a3ee-7fd48abbdbf8",
+                    "sessionId": "a96c6ce5-bee7-4b03-a3ee-7fd48abbdbf5",
                     "gameStatus": "OVER"
                 }
             }
