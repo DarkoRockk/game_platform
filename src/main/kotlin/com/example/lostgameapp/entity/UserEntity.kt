@@ -8,7 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp
 import java.util.*
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", schema = "public")
 @DynamicUpdate
 data class UserEntity(
 
@@ -18,8 +18,8 @@ data class UserEntity(
 
     var username: String? = null,
 
-    @OneToOne
-    @JoinColumn(name = "account_id")
+    @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL])
+    @PrimaryKeyJoinColumn
     var account: AccountEntity? = null,
 
     @CreationTimestamp
@@ -29,4 +29,8 @@ data class UserEntity(
     @UpdateTimestamp
     @JsonIgnore
     var updated: Date? = null
-)
+) {
+    override fun toString(): String {
+        return "UserEntity(id=$id, username=$username, created=$created, updated=$updated)"
+    }
+}

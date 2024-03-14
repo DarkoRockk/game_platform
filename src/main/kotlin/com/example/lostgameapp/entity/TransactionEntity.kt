@@ -10,7 +10,7 @@ import java.math.BigDecimal
 import java.util.*
 
 @Entity
-@Table(name = "transactions")
+@Table(name = "transactions", schema = "public")
 @DynamicUpdate
 data class TransactionEntity(
     @Id
@@ -18,13 +18,17 @@ data class TransactionEntity(
     var id: UUID? = null,
 
     @ManyToOne
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "account_id", referencedColumnName = "id")
     var account: AccountEntity? = null,
 
     var amount: BigDecimal? = null,
 
     @Enumerated(EnumType.STRING)
-    var type: TransactionTypeEnum = TransactionTypeEnum.IN_PROCESS,
+    var type: TransactionTypeEnum? = null,
+
+    @ManyToOne
+    @JoinColumn(name = "game_id", referencedColumnName = "id")
+    var game: GameEntity? = null,
 
     @CreationTimestamp
     @JsonIgnore
@@ -33,4 +37,8 @@ data class TransactionEntity(
     @UpdateTimestamp
     @JsonIgnore
     var updated: Date? = null
-)
+) {
+    override fun toString(): String {
+        return "TransactionEntity(id=$id, amount=$amount, type=$type, created=$created, updated=$updated)"
+    }
+}

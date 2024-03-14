@@ -6,23 +6,24 @@ import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.DynamicUpdate
 import org.hibernate.annotations.UpdateTimestamp
 import java.math.BigDecimal
+import java.math.BigInteger
 import java.util.*
 
 @Entity
-@Table(name = "accounts", schema = "public")
+@Table(name = "games", schema = "public")
 @DynamicUpdate
-data class AccountEntity(
+data class GameEntity(
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    var id: UUID? = null,
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    var id: BigInteger? = null,
 
-    @OneToOne
+    var sessionId: UUID? = null,
+
+    @ManyToOne
     @JoinColumn(name = "user_id")
     @JsonIgnore
     var user: UserEntity? = null,
-
-    var balance: BigDecimal = BigDecimal.ZERO,
 
     @CreationTimestamp
     @JsonIgnore
@@ -33,6 +34,6 @@ data class AccountEntity(
     var updated: Date? = null
 ) {
     override fun toString(): String {
-        return "AccountEntity(id=$id, balance=$balance, created=$created, updated=$updated)"
+        return "GameEntity(id=$id, sessionId=$sessionId, created=$created, updated=$updated)"
     }
 }
