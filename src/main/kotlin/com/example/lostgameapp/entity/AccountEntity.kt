@@ -15,6 +15,7 @@ data class AccountEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @JsonIgnore
     var id: UUID? = null,
 
     @OneToOne

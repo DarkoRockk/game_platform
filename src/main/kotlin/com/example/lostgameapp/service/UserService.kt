@@ -5,6 +5,7 @@ import com.example.lostgameapp.entity.UserEntity
 import com.example.lostgameapp.repository.AccountRepository
 import com.example.lostgameapp.repository.UserRepository
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
 @Service
@@ -13,7 +14,8 @@ class UserService(
     private val accountRepository: AccountRepository
 ) {
 
-    fun getOrCreate(email: String): UserEntity {
+    @Transactional
+    fun getOrCreateUser(email: String): UserEntity {
         var user = userRepository.findByUsername(email)
         if (user == null) {
             user = userRepository.save(
@@ -29,9 +31,5 @@ class UserService(
             )
         }
         return user
-    }
-
-    fun getByEmail(email: String): UserEntity? {
-        return userRepository.findByUsername(email)
     }
 }

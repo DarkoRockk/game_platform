@@ -16,6 +16,7 @@ data class GameEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     var id: BigInteger? = null,
 
     var sessionId: UUID? = null,
