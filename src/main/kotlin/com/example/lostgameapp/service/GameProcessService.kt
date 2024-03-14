@@ -1,11 +1,11 @@
 package com.example.lostgameapp.service
-
 import com.example.lostgameapp.dto.request.ProviderRequestDTO
 import com.example.lostgameapp.dto.response.ProviderResponseDTO
 import com.example.lostgameapp.dto.response.ResponseDataDTO
 import com.example.lostgameapp.entity.TransactionEntity
 import com.example.lostgameapp.enum.ApiRequestEnum
 import com.example.lostgameapp.enum.ErrorEnum
+import com.example.lostgameapp.enum.GameStatusEnum
 import com.example.lostgameapp.enum.TransactionTypeEnum
 import com.example.lostgameapp.repository.AccountRepository
 import com.example.lostgameapp.repository.TransactionRepository
@@ -61,35 +61,59 @@ class GameProcessService(
 
     fun handleDebitRequest(request: ProviderRequestDTO): ProviderResponseDTO {
         val game = request.data?.sessionId?.let { gameService.getBySessionId(it) }
+        if (game != null) {
+            var account = game.user?.account
+            val debitAmount = request.data?.amount
+            if (account != null) {
+                if (account.balance > debitAmount) {
+                    account.balance -= debitAmount!!
+                    account = accountRepository.save(account)
+                    game.gameStatus = GameStatusEnum.OVER
+                    transactionRepository.save(
+                        TransactionEntity(
+                            account = account,
+                            game = game,
+                            amount = debitAmount,
+                            type = TransactionTypeEnum.DEBIT
+                        )
+                    )
+                }
+            }
+            return ProviderResponseDTO(
+                data = ResponseDataDTO(
+                    user = game.user
+                )
+            )
+        }
+        return ProviderResponseDTO(
+            isSuccess = false,
+            error = ErrorEnum.INTERNAL_ERROR
+        )
+    }
+
+    fun handleCreditRequest(request: ProviderRequestDTO): ProviderResponseDTO {
+        val game = request.data?.sessionId?.let { gameService.getBySessionId(it) }
         println(game)
         var account = game?.user?.account
-        val debitAmount = request.data?.amount
+        val creditAmount = request.data?.amount
         if (account != null) {
-            if (account.balance > debitAmount) {
-                account.balance -= debitAmount!!
-                account = accountRepository.save(account)
-                println(account)
-                transactionRepository.save(
-                    TransactionEntity(
-                        account = account,
-                        game = game,
-                        amount = debitAmount,
-                        type = TransactionTypeEnum.DEBIT
-                    )
+            account.balance += creditAmount!!
+            account = accountRepository.save(account)
+            println(account)
+            transactionRepository.save(
+                TransactionEntity(
+                    account = account,
+                    game = game,
+                    amount = creditAmount,
+                    type = TransactionTypeEnum.CREDIT
                 )
-            }
+            )
         }
         return ProviderResponseDTO(
             data = ResponseDataDTO(
                 user = game?.user
             )
         )
-    }
-
-    fun handleCreditRequest(request: ProviderRequestDTO): ProviderResponseDTO {
-        var transaction = request.data?.transactionId?.let { transactionRepository.findById(it) }
-
-        return ProviderResponseDTO()
     }
 
     fun isValidated(sign: String, body: String): Boolean {

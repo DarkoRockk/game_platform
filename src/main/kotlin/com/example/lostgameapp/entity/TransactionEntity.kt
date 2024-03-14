@@ -19,6 +19,7 @@ data class TransactionEntity(
 
     @ManyToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id")
+    @JsonIgnore
     var account: AccountEntity? = null,
 
     var amount: BigDecimal? = null,

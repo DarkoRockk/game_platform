@@ -10,11 +10,12 @@ CREATE TABLE IF NOT EXISTS users
 
 CREATE TABLE IF NOT EXISTS games
 (
-    id         bigserial not null primary key,
-    session_id uuid unique,
-    user_id    uuid references users (id),
-    created    timestamp without time zone default now(),
-    updated    timestamp without time zone default now()
+    id          bigserial not null primary key,
+    session_id  uuid unique,
+    user_id     uuid references users (id),
+    game_status varchar(50),
+    created     timestamp without time zone default now(),
+    updated     timestamp without time zone default now()
 );
 
 CREATE TABLE IF NOT EXISTS accounts
