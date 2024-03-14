@@ -26,27 +26,31 @@ class TxHandlingService(
             if (game.gameStatus != GameStatusEnum.OVER) {
                 var account = game.user?.account
                 val debitAmount = request.data?.amount
-                if (account != null) {
-                    if (account.balance > debitAmount) {
-                        account.balance -= debitAmount!!
-                        account = accountRepository.save(account)
-                        val transaction = transactionRepository.save(
-                            TransactionEntity(
-                                account = account,
-                                game = game,
-                                amount = debitAmount,
-                                type = TransactionTypeEnum.DEBIT
+                if (debitAmount != null) {
+                    if (account != null) {
+                        if (account.balance > debitAmount) {
+                            account.balance -= debitAmount
+                            account = accountRepository.save(account)
+                            val transaction = transactionRepository.save(
+                                TransactionEntity(
+                                    account = account,
+                                    game = game,
+                                    amount = debitAmount,
+                                    type = TransactionTypeEnum.DEBIT
+                                )
                             )
-                        )
-                        response.data = ResponseDataDTO(
-                            user = game.user,
-                            transaction = transaction
-                        )
+                            response.data = ResponseDataDTO(
+                                user = game.user,
+                                transaction = transaction
+                            )
+                        } else {
+                            response.error = ErrorEnum.INSUFFICIENT_BALANCE
+                        }
                     } else {
-                        response.error = ErrorEnum.INSUFFICIENT_BALANCE
+                        response.error = ErrorEnum.INTERNAL_ERROR
                     }
                 } else {
-                    response.error = ErrorEnum.INTERNAL_ERROR
+                    response.error = ErrorEnum.BAD_REQUEST
                 }
             } else {
                 response.error = ErrorEnum.GAME_ALREADY_OVER

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.commons.codec.digest.DigestUtils
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
+import java.lang.Exception
 
 @Service
 class GameProcessService(
@@ -35,13 +36,17 @@ class GameProcessService(
     }
 
     fun handleBalanceRequest(request: ProviderRequestDTO): ProviderResponseDTO {
-        val game = gameService.getOrCreateGame(request.data?.sessionId!!, request.data?.email!!)
-        return ProviderResponseDTO(
-            data = ResponseDataDTO(
+        val response = ProviderResponseDTO()
+        try {
+            val game = gameService.getOrCreateGame(request.data?.sessionId!!, request.data?.email!!)
+            response.data = ResponseDataDTO(
                 user = game.user,
                 game = game
             )
-        )
+        } catch (e: Exception) {
+            response.error = ErrorEnum.BAD_REQUEST
+        }
+        return response
     }
 
     fun isValidated(sign: String, body: String): Boolean {

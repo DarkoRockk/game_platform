@@ -186,10 +186,19 @@ To access the database inside the Docker container, you can use the following co
 psql -U myuser -d mydatabase
 ```
 
+## Swagger Access
+
+To access the database inside the Docker container, you can use the following command:
+
+```
+http://localhost:8080/swagger-ui/index.html
+```
+
 ## To-Do
 
 - Test Coverage
 - Handle More Types of Exceptions
+- Logging
 
 ## Support
 

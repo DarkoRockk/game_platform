@@ -10,7 +10,6 @@ class GameController(
     private val gameProcessService: GameProcessService
 ) {
 
-
     @PostMapping("/games-processor")
     fun processGame(
         @RequestHeader("Sign") sign: String,

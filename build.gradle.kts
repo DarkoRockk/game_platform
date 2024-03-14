@@ -25,10 +25,10 @@ dependencies {
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.flywaydb:flyway-core")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("commons-codec:commons-codec:1.16.0")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
+    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2")
     runtimeOnly("org.postgresql:postgresql")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
