@@ -1,0 +1,6 @@
+package com.example.lostgameapp.enum
+
+enum class ErrorEnum {
+    NO_ERRORS, ALREADY_PROCESSED, SIGN_NOT_PROVIDED, INVALID_SIGN,
+    UNKNOWN_CURRENCY, INSUFFICIENT_BALANCE, INTERNAL_ERROR
+}

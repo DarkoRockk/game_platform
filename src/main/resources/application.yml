@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: lostgame-app
+app:
+  secret: 123123
