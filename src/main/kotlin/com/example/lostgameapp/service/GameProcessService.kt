@@ -6,6 +6,7 @@ import com.example.lostgameapp.dto.response.ResponseDataDTO
 import com.example.lostgameapp.entity.TransactionEntity
 import com.example.lostgameapp.enum.ApiRequestEnum
 import com.example.lostgameapp.enum.ErrorEnum
+import com.example.lostgameapp.enum.TransactionTypeEnum
 import com.example.lostgameapp.repository.AccountRepository
 import com.example.lostgameapp.repository.TransactionRepository
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -59,8 +60,9 @@ class GameProcessService(
     }
 
     fun handleDebitRequest(request: ProviderRequestDTO): ProviderResponseDTO {
-        var account = request.data?.userId?.let { accountRepository.findByUserId(it) }
-        println(account)
+        val game = request.data?.sessionId?.let { gameService.getBySessionId(it) }
+        println(game)
+        var account = game?.user?.account
         val debitAmount = request.data?.amount
         if (account != null) {
             if (account.balance > debitAmount) {
@@ -70,12 +72,18 @@ class GameProcessService(
                 transactionRepository.save(
                     TransactionEntity(
                         account = account,
-                        amount = debitAmount
+                        game = game,
+                        amount = debitAmount,
+                        type = TransactionTypeEnum.DEBIT
                     )
                 )
             }
         }
-        return ProviderResponseDTO()
+        return ProviderResponseDTO(
+            data = ResponseDataDTO(
+                user = game?.user
+            )
+        )
     }
 
     fun handleCreditRequest(request: ProviderRequestDTO): ProviderResponseDTO {
