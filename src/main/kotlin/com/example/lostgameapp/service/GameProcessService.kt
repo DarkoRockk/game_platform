@@ -35,7 +35,7 @@ class GameProcessService(
         return ProviderResponseDTO(error = ErrorEnum.INVALID_SIGN)
     }
 
-    fun handleBalanceRequest(request: ProviderRequestDTO): ProviderResponseDTO {
+    private fun handleBalanceRequest(request: ProviderRequestDTO): ProviderResponseDTO {
         val response = ProviderResponseDTO()
         try {
             val game = gameService.getOrCreateGame(request.data?.sessionId!!, request.data?.email!!)
@@ -49,7 +49,7 @@ class GameProcessService(
         return response
     }
 
-    fun isValidated(sign: String, body: String): Boolean {
+    private fun isValidated(sign: String, body: String): Boolean {
         val line = (body + secret)
         val mySign = DigestUtils.md5Hex(line)
         println(mySign)
