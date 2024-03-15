@@ -5,6 +5,7 @@ import com.example.lostgameapp.dto.response.ProviderResponseDTO
 import com.example.lostgameapp.dto.response.ResponseDataDTO
 import com.example.lostgameapp.enum.ApiRequestEnum
 import com.example.lostgameapp.enum.ErrorEnum
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import org.apache.commons.codec.digest.DigestUtils
 import org.springframework.beans.factory.annotation.Value
@@ -22,6 +23,7 @@ class GameProcessService(
     private val objectMapper = ObjectMapper()
     fun handleRequest(sign: String, requestRaw: String): ProviderResponseDTO {
         if (isValidated(sign, requestRaw)) {
+            objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             val request = objectMapper.readValue(requestRaw, ProviderRequestDTO::class.java)
             return when (request.api) {
                 ApiRequestEnum.BALANCE -> handleBalanceRequest(request)
