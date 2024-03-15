@@ -22,41 +22,30 @@ class TxHandlingService(
     fun handleDebitTransaction(request: ProviderRequestDTO): ProviderResponseDTO {
         val response = ProviderResponseDTO()
         val game = request.data?.sessionId?.let { gameService.getBySessionId(it) }
-        if (game != null) {
-            if (game.gameStatus != GameStatusEnum.OVER) {
-                var account = game.user?.account
-                val debitAmount = request.data?.amount
-                if (debitAmount != null) {
-                    if (account != null) {
-                        if (account.balance > debitAmount) {
-                            account.balance -= debitAmount
-                            account = accountRepository.save(account)
-                            val transaction = transactionRepository.save(
-                                TransactionEntity(
-                                    account = account,
-                                    game = game,
-                                    amount = debitAmount,
-                                    type = TransactionTypeEnum.DEBIT
-                                )
-                            )
-                            response.data = ResponseDataDTO(
-                                user = game.user,
-                                transaction = transaction
-                            )
-                        } else {
-                            response.error = ErrorEnum.INSUFFICIENT_BALANCE
-                        }
-                    } else {
-                        response.error = ErrorEnum.INTERNAL_ERROR
-                    }
-                } else {
-                    response.error = ErrorEnum.BAD_REQUEST
-                }
+            ?: return ProviderResponseDTO(error = ErrorEnum.GAME_NOT_EXIST)
+        if (game.gameStatus != GameStatusEnum.OVER) {
+            var account = game.user?.account ?: return ProviderResponseDTO(error = ErrorEnum.INTERNAL_ERROR)
+            val debitAmount = request.data?.amount ?: return ProviderResponseDTO(error = ErrorEnum.BAD_REQUEST)
+            if (account.balance > debitAmount) {
+                account.balance -= debitAmount
+                account = accountRepository.save(account)
+                val transaction = transactionRepository.save(
+                    TransactionEntity(
+                        account = account,
+                        game = game,
+                        amount = debitAmount,
+                        type = TransactionTypeEnum.DEBIT
+                    )
+                )
+                response.data = ResponseDataDTO(
+                    user = game.user,
+                    transaction = transaction
+                )
             } else {
-                response.error = ErrorEnum.GAME_ALREADY_OVER
+                response.error = ErrorEnum.INSUFFICIENT_BALANCE
             }
         } else {
-            response.error = ErrorEnum.GAME_NOT_EXIST
+            response.error = ErrorEnum.GAME_ALREADY_OVER
         }
         return response
     }
@@ -65,34 +54,28 @@ class TxHandlingService(
     fun handleCreditTransaction(request: ProviderRequestDTO): ProviderResponseDTO {
         val response = ProviderResponseDTO()
         val game = request.data?.sessionId?.let { gameService.getBySessionId(it) }
-        if (game != null) {
-            if (game.gameStatus != GameStatusEnum.OVER) {
-                var account = game.user?.account
-                val creditAmount = request.data?.amount
-                if (account != null) {
-                    account.balance += creditAmount!!
-                    account = accountRepository.save(account)
-                    game.gameStatus = GameStatusEnum.OVER
-                    val transaction = transactionRepository.save(
-                        TransactionEntity(
-                            account = account,
-                            game = game,
-                            amount = creditAmount,
-                            type = TransactionTypeEnum.CREDIT
-                        )
-                    )
-                    response.data = ResponseDataDTO(
-                        user = game.user,
-                        transaction = transaction
-                    )
-                } else {
-                    response.error = ErrorEnum.INTERNAL_ERROR
-                }
-            } else {
-                response.error = ErrorEnum.GAME_ALREADY_OVER
-            }
+            ?: return ProviderResponseDTO(error = ErrorEnum.GAME_NOT_EXIST)
+        if (game.gameStatus != GameStatusEnum.OVER) {
+            var account = game.user?.account ?: return ProviderResponseDTO(error = ErrorEnum.INTERNAL_ERROR)
+            val creditAmount = request.data?.amount ?: return ProviderResponseDTO(error = ErrorEnum.INTERNAL_ERROR)
+            account.balance += creditAmount
+            account = accountRepository.save(account)
+            game.gameStatus = GameStatusEnum.OVER
+            val transaction = transactionRepository.save(
+                TransactionEntity(
+                    account = account,
+                    game = game,
+                    amount = creditAmount,
+                    type = TransactionTypeEnum.CREDIT
+                )
+            )
+            response.data = ResponseDataDTO(
+                user = game.user,
+                transaction = transaction
+            )
+
         } else {
-            response.error = ErrorEnum.GAME_NOT_EXIST
+            response.error = ErrorEnum.GAME_ALREADY_OVER
         }
         return response
     }

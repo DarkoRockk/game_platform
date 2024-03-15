@@ -36,17 +36,15 @@ class GameProcessService(
     }
 
     private fun handleBalanceRequest(request: ProviderRequestDTO): ProviderResponseDTO {
-        val response = ProviderResponseDTO()
-        try {
-            val game = gameService.getOrCreateGame(request.data?.sessionId!!, request.data?.email!!)
-            response.data = ResponseDataDTO(
+        val sessionId = request.data?.sessionId ?: return ProviderResponseDTO(error = ErrorEnum.BAD_REQUEST)
+        val email = request.data?.email ?: return ProviderResponseDTO(error = ErrorEnum.BAD_REQUEST)
+        val game = gameService.getOrCreateGame(sessionId, email)
+        return ProviderResponseDTO(
+            data = ResponseDataDTO(
                 user = game.user,
                 game = game
             )
-        } catch (e: Exception) {
-            response.error = ErrorEnum.BAD_REQUEST
-        }
-        return response
+        )
     }
 
     private fun isValidated(sign: String, body: String): Boolean {
